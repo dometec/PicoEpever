@@ -4,7 +4,7 @@ class Grafana {
 
   public:
     Grafana();
-    void sendData(EpeverData dto);
+    void sendData(WifiData wifiData, EpeverData dto);
   private:
     char msg[1000];
 

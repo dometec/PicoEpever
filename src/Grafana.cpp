@@ -1,9 +1,6 @@
 #include <WiFi.h>
+#include <WifiData.h>
 #include "Grafana.h"
-
-#define GRAFANA_API_KEY "1034137:glc_eyJvIjoiODc2MTY4IiwibiI6InBpY28tZXBldmVyIiwiayI6ImVkcUl0NE41OXREM3lsazQzdDNvQzI3OCIsIm0iOnsiciI6InByb2QtZXUtd2VzdC0yIn19"
-#define GRAFANA_HOST "influx-prod-24-prod-eu-west-2.grafana.net"
-#define GRAFANA_PATH "/api/v1/push/influx/write"
 
 BearSSL::WiFiClientSecure client;
 
@@ -11,7 +8,7 @@ Grafana::Grafana() {
 
 };
 
-void Grafana::sendData(EpeverData dto) {
+void Grafana::sendData(WifiData wifiData, EpeverData dto) {
 
   Serial1.println("Prepare data...");
 
@@ -41,19 +38,19 @@ dischargeEquipStatus=%d",
   Serial1.println("Send data...");
 
   client.setInsecure();
-  client.connect(GRAFANA_HOST, 443);
+  client.connect(wifiData.grafana_host, 443);
 
   if (client.connected()) {
   
     client.print("POST ");
-    client.print(GRAFANA_PATH);
+    client.print(wifiData.grafana_path);
     client.println(" HTTP/1.1");
 
     client.print("Host: ");
-    client.println(GRAFANA_HOST);
+    client.println(wifiData.grafana_host);
 
     client.print("Authorization: Bearer ");
-    client.println(GRAFANA_API_KEY);
+    client.println(wifiData.grafana_apikey);
 
     client.println("Content-Type: text/plain");
 
@@ -85,6 +82,9 @@ dischargeEquipStatus=%d",
     client.stop();
     Serial1.printf("\n-------\n");
 
+  } else {
+    Serial1.print("Errore durante la connessione a ");
+    Serial1.println(wifiData.grafana_host);
   }
 
 }

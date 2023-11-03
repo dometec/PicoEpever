@@ -44,7 +44,7 @@ EpeverData Epever::read() {
   // Pannelli
   dto.pvVolt = _readIR(0x3100) / 100.0;
   dto.pvAmpere = _readIR(0x3101) / 100.0;
-  uint32_t p = _readIR(0x3103) << 16;
+  int32_t p = _readIR(0x3103) << 16;
   dto.pvWatt =  (p + _readIR(0x3102)) / 100.0;
 
   // Carico
@@ -58,6 +58,7 @@ EpeverData Epever::read() {
   dto.battSOC =  _readIR(0x311A);
   dto.battRatedVolt = _readIR(0x311D) / 100.0;
   dto.battVolt =  _readIR(0x331A) / 100.0;
+
   p = _readIR(0x331C) << 16;
   dto.battAmpere = (p + _readIR(0x331B)) / 100.0;
 

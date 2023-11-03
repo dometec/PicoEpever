@@ -54,7 +54,7 @@ void handleRoot() {
                 </head>\
                 <body>\
                   <h1>Data Logger EPEVER su Grafana Cloud con Raspberry Pico W</h1>\
-                  <h3>Realizzato da Domenico Briganti - dometec@gmail.com - Settembre 2023</h3>\
+                  <h3>Realizzato da Domenico Briganti - dometec@gmail.com - Novembre 2023</h3>\
                   <h2>Questa &egrave; la pagina di configurazione</h2>\
                   <p>Se qualche parametro &egrave; errato e dai l'OK, puoi ritornare su questa pagina mettendo a massa il PIN n. 24 (GPIO 28) e resettando la scheda.</p>\
                   <form action=\"/\" method=\"post\">\
@@ -80,24 +80,12 @@ void handleNotFound() {
 }
 
 void handleSave() {
-
-  for (uint8_t i = 0; i < server.args(); i++) {
-
-    const char * name = server.argName(i).c_str();
-
-    if (strcmp(server.argName(i).c_str(), "wifisid") == 0) 
-      strcpy(wifiData.wifi_sid, server.arg(i).c_str());
-    else if (strcmp(server.argName(i).c_str(), "wifipassword") == 0) 
-      strcpy(wifiData.wifi_pas, server.arg(i).c_str());
-    else if (strcmp(server.argName(i).c_str(), "grafanaapikey") == 0) 
-      strcpy(wifiData.grafana_apikey, server.arg(i).c_str());
-    else if (strcmp(server.argName(i).c_str(), "grafanahost") == 0) 
-      strcpy(wifiData.grafana_host, server.arg(i).c_str());
-    else if (strcmp(server.argName(i).c_str(), "grafanapath") == 0) 
-      strcpy(wifiData.grafana_path, server.arg(i).c_str());
-
-  }
-
+  
+  strcpy(wifiData.wifi_sid, server.arg(0).c_str());
+  strcpy(wifiData.wifi_pas, server.arg(1).c_str());
+  strcpy(wifiData.grafana_apikey, server.arg(2).c_str());
+  strcpy(wifiData.grafana_host, server.arg(3).c_str());
+  strcpy(wifiData.grafana_path, server.arg(4).c_str());
   strcpy(wifiData.status, status_saved);
 
   Serial1.println("Dati arrivati...");
@@ -123,7 +111,7 @@ void handleSave() {
                 </head>\
                 <body>\
                   <h1>Data Logger EPEVER su Grafana Cloud con Raspberry Pico W</h1>\
-                  <h3>Realizzato da Domenico Briganti - dometec@gmail.com - Settembre 2023</h3>\
+                  <h3>Realizzato da Domenico Briganti - dometec@gmail.com - Novembre 2023</h3>\
                   <h2>Configurazione salvata!</h2>\
                   <p>Adesso viene resettato il Raspberry Pico, se il LED lampegger&agrave; &egrave; tutto pronto, altrimenti serve rifare la procedura.</p>\
                   <p>Se hai problemi puoi ed hai un convertitore seriale->USB puoi leggere sull'uscita al PIN 2 i le operazioni che il Pico sta effettuanto</p>\
@@ -281,7 +269,7 @@ void loop(void) {
 
       if ((cycle % 1000) == 0) {
         EpeverData dto = epever.read();
-        grafana.sendData(dto);
+        grafana.sendData(wifiData, dto);
       }
 
       cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, (cycle / 10) % 2);
